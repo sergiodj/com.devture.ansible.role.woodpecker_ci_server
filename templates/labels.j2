@@ -1,0 +1,12 @@
+{% if devture_woodpecker_ci_server_container_labels_traefik_enabled %}
+traefik.enable=true
+{% if devture_woodpecker_ci_server_container_labels_traefik_docker_network %}
+traefik.docker.network={{ devture_woodpecker_ci_server_container_labels_traefik_docker_network }}
+{% endif %}
+traefik.http.routers.{{ devture_woodpecker_ci_server_identifier }}.rule={{ devture_woodpecker_ci_server_container_labels_traefik_rule }}
+traefik.http.routers.{{ devture_woodpecker_ci_server_identifier }}.entrypoints={{ devture_woodpecker_ci_server_container_labels_traefik_entrypoints }}
+traefik.http.routers.{{ devture_woodpecker_ci_server_identifier }}.tls.certResolver={{ devture_woodpecker_ci_server_container_labels_traefik_tls_certResolver }}
+traefik.http.services.{{ devture_woodpecker_ci_server_identifier }}.loadbalancer.server.port=8000
+{% endif %}
+
+{{ devture_woodpecker_ci_server_container_labels_additional_labels }}
