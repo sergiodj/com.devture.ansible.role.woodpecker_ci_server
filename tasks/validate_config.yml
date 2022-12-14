@@ -12,7 +12,6 @@
     - devture_woodpecker_ci_server_config_agent_secret
     - devture_woodpecker_ci_server_provider
 
-
 - name: Fail if required Woodpecker CI server + Gitea settings not defined
   ansible.builtin.fail:
     msg: >-
@@ -22,3 +21,11 @@
     - devture_woodpecker_ci_server_config_gitea_url
     - devture_woodpecker_ci_server_config_gitea_client
     - devture_woodpecker_ci_server_config_gitea_secret
+
+- name: Fail if required Woodpecker CI server Traefik integration settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for using this role.
+  when: "devture_woodpecker_ci_server_container_labels_traefik_enabled and vars[item] == ''"
+  with_items:
+    - devture_woodpecker_ci_server_container_labels_traefik_docker_network

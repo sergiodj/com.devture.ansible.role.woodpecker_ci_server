@@ -102,7 +102,7 @@ devture_woodpecker_ci_server_systemd_required_systemd_services_list: ['docker.se
 #
 # To inject your own other container labels, see `devture_woodpecker_ci_server_container_labels_additional_labels`.
 devture_woodpecker_ci_server_container_labels_traefik_enabled: true
-devture_woodpecker_ci_server_container_labels_traefik_docker_network: "{{ devture_woodpecker_ci_server_container_network }}"
+devture_woodpecker_ci_server_container_labels_traefik_docker_network: ''
 devture_woodpecker_ci_server_container_labels_traefik_rule: 'Host(`{{ devture_woodpecker_ci_server_server_fqn }}`)'
 devture_woodpecker_ci_server_container_labels_traefik_entrypoints: web-secure
 devture_woodpecker_ci_server_container_labels_traefik_tls_certResolver: default  # noqa var-naming
