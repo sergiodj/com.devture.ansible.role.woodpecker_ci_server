@@ -62,6 +62,12 @@ devture_woodpecker_ci_server_config_grpc_addr_port: 9000
 # See: https://woodpecker-ci.org/docs/administration/server-config#woodpecker_grpc_addr
 devture_woodpecker_ci_server_config_grpc_addr: ":{{ devture_woodpecker_ci_server_config_grpc_addr_port }}"
 
+# devture_woodpecker_ci_server_config_log_level configures the logging level.
+# Valid values: 'trace', 'debug', 'info', 'warn', 'error', 'fatal', 'panic', 'disabled' and empty ('')
+#
+# See: https://woodpecker-ci.org/docs/administration/server-config#woodpecker_log_level
+devture_woodpecker_ci_server_config_log_level: info
+
 # devture_woodpecker_ci_server_provider specifies the source-code provider (Github, Gitlab, Gitea, ..)
 # See: https://woodpecker-ci.org/docs/administration/vcs/overview
 devture_woodpecker_ci_server_provider: ''
