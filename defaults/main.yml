@@ -12,7 +12,7 @@ devture_woodpecker_ci_server_uid: ''
 devture_woodpecker_ci_server_gid: ''
 
 devture_woodpecker_ci_server_container_image: "docker.io/woodpeckerci/woodpecker-server:{{ devture_woodpecker_ci_server_container_image_tag }}"
-devture_woodpecker_ci_server_container_image_tag: v0.15.5
+devture_woodpecker_ci_server_container_image_tag: v0.15.6
 devture_woodpecker_ci_server_container_image_force_pull: "{{ devture_woodpecker_ci_server_container_image.endswith(':latest') }}"
 
 devture_woodpecker_ci_server_base_path: "/woodpecker-ci-server"
