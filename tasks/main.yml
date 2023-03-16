@@ -1,13 +1,21 @@
 ---
 
-- block:
-    - when: devture_woodpecker_ci_server_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
-
-    - when: devture_woodpecker_ci_server_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
-  tags:
+- tags:
     - setup-all
     - setup-woodpecker-ci-server
     - install-all
     - install-woodpecker-ci-server
+  block:
+    - when: devture_woodpecker_ci_server_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: devture_woodpecker_ci_server_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-woodpecker-ci-server
+  block:
+    - when: not devture_woodpecker_ci_server_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
+

@@ -3,19 +3,26 @@
 
 devture_woodpecker_ci_server_enabled: true
 
+devture_woodpecker_ci_server_version: v0.15.6
+
 devture_woodpecker_ci_server_identifier: devture-woodpecker-ci-server
 
 # devture_woodpecker_ci_server_hostname is the fully-qualified domain name of your Woodpecker CI host (e.g. `woodpecker.DOMAIN`)
 devture_woodpecker_ci_server_hostname: ''
 
+# The path at which Woodpecker CI is served.
+# This value must either be `/` or not end with a slash (e.g. `/ci`).
+devture_woodpecker_ci_server_path_prefix: /
+
 devture_woodpecker_ci_server_uid: ''
 devture_woodpecker_ci_server_gid: ''
 
-devture_woodpecker_ci_server_container_image: "docker.io/woodpeckerci/woodpecker-server:{{ devture_woodpecker_ci_server_container_image_tag }}"
-devture_woodpecker_ci_server_container_image_tag: v0.15.6
+devture_woodpecker_ci_server_container_image: "{{ devture_woodpecker_ci_server_container_image_registry_prefix }}woodpeckerci/woodpecker-server:{{ devture_woodpecker_ci_server_container_image_tag }}"
+devture_woodpecker_ci_server_container_image_tag: "{{ devture_woodpecker_ci_server_version }}"
 devture_woodpecker_ci_server_container_image_force_pull: "{{ devture_woodpecker_ci_server_container_image.endswith(':latest') }}"
+devture_woodpecker_ci_server_container_image_registry_prefix: docker.io/
 
-devture_woodpecker_ci_server_base_path: "/woodpecker-ci-server"
+devture_woodpecker_ci_server_base_path: "/{{ devture_woodpecker_ci_server_identifier }}"
 devture_woodpecker_ci_server_data_dir_path: "{{ devture_woodpecker_ci_server_base_path }}/data"
 
 devture_woodpecker_ci_server_http_bind_port: ''
@@ -108,10 +115,30 @@ devture_woodpecker_ci_server_systemd_required_systemd_services_list: ['docker.se
 #
 # To inject your own other container labels, see `devture_woodpecker_ci_server_container_labels_additional_labels`.
 devture_woodpecker_ci_server_container_labels_traefik_enabled: true
-devture_woodpecker_ci_server_container_labels_traefik_docker_network: ''
-devture_woodpecker_ci_server_container_labels_traefik_rule: 'Host(`{{ devture_woodpecker_ci_server_hostname }}`)'
+devture_woodpecker_ci_server_container_labels_traefik_docker_network: "{{ devture_woodpecker_ci_server_identifier }}"
+devture_woodpecker_ci_server_container_labels_traefik_hostname: "{{ devture_woodpecker_ci_server_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/ci`).
+devture_woodpecker_ci_server_container_labels_traefik_path_prefix: "{{ devture_woodpecker_ci_server_path_prefix }}"
+devture_woodpecker_ci_server_container_labels_traefik_rule: "Host(`{{ devture_woodpecker_ci_server_container_labels_traefik_hostname }}`){% if devture_woodpecker_ci_server_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ devture_woodpecker_ci_server_container_labels_traefik_path_prefix }}`){% endif %}"
+devture_woodpecker_ci_server_container_labels_traefik_priority: 0
 devture_woodpecker_ci_server_container_labels_traefik_entrypoints: web-secure
+devture_woodpecker_ci_server_container_labels_traefik_tls: "{{ devture_woodpecker_ci_server_container_labels_traefik_entrypoints != 'web' }}"
 devture_woodpecker_ci_server_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `devture_woodpecker_ci_server_container_labels_traefik_additional_response_headers_custom`
+devture_woodpecker_ci_server_container_labels_traefik_additional_response_headers: "{{ devture_woodpecker_ci_server_container_labels_traefik_additional_response_headers_auto | combine(devture_woodpecker_ci_server_container_labels_traefik_additional_response_headers_custom) }}"
+devture_woodpecker_ci_server_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': devture_woodpecker_ci_server_http_header_xss_protection} if devture_woodpecker_ci_server_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': devture_woodpecker_ci_server_http_header_frame_options} if devture_woodpecker_ci_server_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': devture_woodpecker_ci_server_http_header_content_type_options} if devture_woodpecker_ci_server_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': devture_woodpecker_ci_server_http_header_content_security_policy} if devture_woodpecker_ci_server_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': devture_woodpecker_ci_server_http_header_content_permission_policy} if devture_woodpecker_ci_server_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': devture_woodpecker_ci_server_http_header_strict_transport_security} if devture_woodpecker_ci_server_http_header_strict_transport_security and devture_woodpecker_ci_server_container_labels_traefik_tls else {})
+  }}
+devture_woodpecker_ci_server_container_labels_traefik_additional_response_headers_custom: {}
 
 # devture_woodpecker_ci_server_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `roles/custom/woodpecker_ci_server/templates/labels.j2` for details.
@@ -134,9 +161,56 @@ devture_woodpecker_ci_server_container_network: woodpecker-ci
 
 # A list of additional container networks that the container would be connected to.
 # The playbook does not create these networks, so make sure they already exist.
-#
-# Use this to expose Gitea to another reverse proxy, which runs in a different container network,
-# without exposing all other Gitea services to that other reverse-proxy.
-#
-# For background, see: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1498
 devture_woodpecker_ci_server_container_additional_networks: []
+
+
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+devture_woodpecker_ci_server_http_header_xss_protection: "1; mode=block"
+
+# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+devture_woodpecker_ci_server_http_header_frame_options: SAMEORIGIN
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+devture_woodpecker_ci_server_http_header_content_type_options: nosniff
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+devture_woodpecker_ci_server_http_header_content_security_policy: frame-ancestors 'self'
+
+# Specifies the value of the `Permission-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
+devture_woodpecker_ci_server_http_header_content_permission_policy: "{{ 'interest-cohort=()' if devture_woodpecker_ci_server_floc_optout_enabled else '' }}"
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+devture_woodpecker_ci_server_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if devture_woodpecker_ci_server_hsts_preload_enabled else '' }}"
+
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `devture_woodpecker_ci_server_content_permission_policy`
+devture_woodpecker_ci_server_floc_optout_enabled: true
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `devture_woodpecker_ci_server_http_header_strict_transport_security`
+devture_woodpecker_ci_server_hsts_preload_enabled: false
