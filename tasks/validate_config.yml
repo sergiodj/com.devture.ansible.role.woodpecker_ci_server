@@ -1,5 +1,14 @@
 ---
 
+- name: (Deprecation) Catch and report renamed Woodpecker CI server settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'devture_woodpecker_ci_server_server_fqn', 'new': 'devture_woodpecker_ci_server_hostname'}
+
 - name: Fail if required Woodpecker CI server settings not defined
   ansible.builtin.fail:
     msg: >-
@@ -8,7 +17,7 @@
   with_items:
     - devture_woodpecker_ci_server_uid
     - devture_woodpecker_ci_server_gid
-    - devture_woodpecker_ci_server_server_fqn
+    - devture_woodpecker_ci_server_hostname
     - devture_woodpecker_ci_server_config_agent_secret
     - devture_woodpecker_ci_server_provider
 
