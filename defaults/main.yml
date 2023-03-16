@@ -28,6 +28,11 @@ devture_woodpecker_ci_server_data_dir_path: "{{ devture_woodpecker_ci_server_bas
 devture_woodpecker_ci_server_http_bind_port: ''
 devture_woodpecker_ci_server_https_bind_port: ''
 
+# devture_woodpecker_ci_server_container_add_host_domain_name and devture_woodpecker_ci_server_container_add_host_ip_address
+# allow you to add a new host entry (domain name to IP address mapping) to the container.
+devture_woodpecker_ci_server_container_add_host_domain_name: ''
+devture_woodpecker_ci_server_container_add_host_ip_address: ''
+
 # devture_woodpecker_ci_server_config_host controls WOODPECKER_HOST - Server fully qualified url of the user-facing hostname.
 # See: https://woodpecker-ci.org/docs/administration/server-config#woodpecker_host
 devture_woodpecker_ci_server_config_host: "https://{{ devture_woodpecker_ci_server_hostname }}"
