@@ -32,8 +32,6 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--env-file={{ devture_woodpecker_ci_server_base_path }}/env \
 			--label-file={{ devture_woodpecker_ci_server_base_path }}/labels \
 			--mount type=bind,src={{ devture_woodpecker_ci_server_data_dir_path }},dst=/data \
-			--mount type=bind,src=/etc/timezone,dst=/etc/timezone,ro \
-			--mount type=bind,src=/etc/localtime,dst=/etc/localtime,ro \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=128m \
 			{{ devture_woodpecker_ci_server_container_image }}
 
