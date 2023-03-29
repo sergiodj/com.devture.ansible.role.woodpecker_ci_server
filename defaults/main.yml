@@ -103,6 +103,23 @@ devture_woodpecker_ci_server_config_gitea_skip_verify: false
 ######################################
 
 
+######################################
+# github-specific                     #
+######################################
+
+devture_woodpecker_ci_server_config_github_url: 'https://github.com'
+
+devture_woodpecker_ci_server_config_github_client: ''
+devture_woodpecker_ci_server_config_github_secret: ''
+devture_woodpecker_ci_server_config_github_skip_verify: false
+
+######################################
+# /github-specific                    #
+######################################
+
+
+
+
 # devture_woodpecker_ci_server_database_driver configures the database driver
 # Valid values: sqlite3, postgres, ymsql
 #
