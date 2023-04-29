@@ -50,11 +50,3 @@
         msg: >-
           devture_woodpecker_ci_server_container_labels_traefik_path_prefix (`{{ devture_woodpecker_ci_server_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/ci`).
       when: "devture_woodpecker_ci_server_container_labels_traefik_path_prefix != '/' and devture_woodpecker_ci_server_container_labels_traefik_path_prefix[-1] == '/'"
-
-    - name: Fail if devture_woodpecker_ci_server_container_labels_traefik_path_prefix specifies a subpath
-      ansible.builtin.fail:
-        msg: >-
-          devture_woodpecker_ci_server_container_labels_traefik_path_prefix (`{{ devture_woodpecker_ci_server_container_labels_traefik_path_prefix }}`) specifies a subpath,
-          but Woodpecker CI does not support this yet.
-          See: https://github.com/woodpecker-ci/woodpecker/issues/1636
-      when: "devture_woodpecker_ci_server_container_labels_traefik_path_prefix != '/'"

@@ -7,6 +7,8 @@ devture_woodpecker_ci_server_version: v0.15.7
 
 devture_woodpecker_ci_server_identifier: devture-woodpecker-ci-server
 
+devture_woodpecker_ci_server_scheme: https
+
 # devture_woodpecker_ci_server_hostname is the fully-qualified domain name of your Woodpecker CI host (e.g. `woodpecker.DOMAIN`)
 devture_woodpecker_ci_server_hostname: ''
 
@@ -33,9 +35,14 @@ devture_woodpecker_ci_server_https_bind_port: ''
 devture_woodpecker_ci_server_container_add_host_domain_name: ''
 devture_woodpecker_ci_server_container_add_host_ip_address: ''
 
-# devture_woodpecker_ci_server_config_host controls WOODPECKER_HOST - Server fully qualified url of the user-facing hostname.
+# devture_woodpecker_ci_server_config_host controls WOODPECKER_HOST - Server fully qualified url, without the root path prefix.
 # See: https://woodpecker-ci.org/docs/administration/server-config#woodpecker_host
-devture_woodpecker_ci_server_config_host: "https://{{ devture_woodpecker_ci_server_hostname }}"
+# See: devture_woodpecker_ci_server_config_root_url
+devture_woodpecker_ci_server_config_host: "{{ devture_woodpecker_ci_server_scheme }}://{{ devture_woodpecker_ci_server_hostname }}"
+
+# devture_woodpecker_ci_server_config_root_url controls WOODPECKER_ROOT_URL - path prefix.
+# See: https://woodpecker-ci.org/docs/administration/server-config#woodpecker_root_url
+devture_woodpecker_ci_server_config_root_url: "{{ devture_woodpecker_ci_server_path_prefix }}"
 
 # devture_woodpecker_ci_server_config_open controls WOODPECKER_OPEN - whether user registration is allowed
 # See: https://woodpecker-ci.org/docs/administration/server-config#woodpecker_open
