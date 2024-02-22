@@ -13,11 +13,6 @@ traefik.http.middlewares.{{ devture_woodpecker_ci_server_identifier }}-slashless
 {% set middlewares = middlewares + [devture_woodpecker_ci_server_identifier + '-slashless-redirect'] %}
 {% endif %}
 
-{% if devture_woodpecker_ci_server_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.{{ devture_woodpecker_ci_server_identifier }}-strip-prefix.stripprefix.prefixes={{ devture_woodpecker_ci_server_container_labels_traefik_path_prefix }}
-{% set middlewares = middlewares + [devture_woodpecker_ci_server_identifier + '-strip-prefix'] %}
-{% endif %}
-
 {% if devture_woodpecker_ci_server_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in devture_woodpecker_ci_server_container_labels_traefik_additional_response_headers.items() %}
 traefik.http.middlewares.{{ devture_woodpecker_ci_server_identifier }}-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
